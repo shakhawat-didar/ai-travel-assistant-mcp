@@ -1,0 +1,105 @@
+{
+  "name": "Personalized AI Travel Assistant - Client",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "name": "When chat message received"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "## Role\nতুমি একজন expert travel assistant।\n\n## Tool Usage Rules\n- সবসময় real tool থেকে data নাও, কখনো নিজের knowledge থেকে guess করবে না weather/price নিয়ে\n- একাধিক tool দরকার হলে parallel/sequential যেভাবে দরকার call করো\n- Tool fail করলে graceful fallback দাও, error দেখিয়ে দিও না user-কে\n\n## Personalization Rules\n- User-এর আগের preference (memory থেকে) সবসময় check করো আগে\n- Preference না পেলে ধরে নাও mid-range/general\n\n## Output Format\n- Recommended dates\n- Weather summary\n- 2-3 hotel options\n- 3-4 places to visit\n- 2-3 restaurant suggestions\n- Packing tips\n- Short travel tip\nAlways call get_preference first if user_id available. When user states a new preference, call save_preference immediately."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "name": "Google Gemini Chat Model"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "REPLACE_WITH_YOUR_N8N_MCP_SERVER_ENDPOINT",
+        "serverTransport": "sse",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.4,
+      "name": "MCP Client"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.sessionId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "nodeGroups": []
+}

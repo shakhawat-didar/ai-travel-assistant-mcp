@@ -1,0 +1,279 @@
+{
+  "name": "Travel Assistant MCP Tools - Server",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "e803214c-8135-44fe-a74f-56b459bbb652"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "name": "MCP Server Trigger"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get current weather for a given latitude and longitude",
+        "url": "https://api.open-meteo.com/v1/forecast",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "latitude",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', ``, 'string') }}"
+            },
+            {
+              "name": "longitude",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters1_Value', ``, 'string') }}"
+            },
+            {
+              "name": "current_weather",
+              "value": "=true"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.5,
+      "name": "get_weather",
+      "notes": "Get current weather for a given latitude and longitude"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get current exchange rates from a given base currency to other supported currencies.",
+        "url": "https://api.frankfurter.app/latest",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "base",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', ``, 'string') }}"
+            },
+            {
+              "name": "symbols",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters1_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.5,
+      "name": "get_exchange_rate",
+      "notesInFlow": true,
+      "disabled": true,
+      "notes": "Get the currency exchange rate between two currencies"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Search for hotels, restaurants, or tourist attractions in a location. Query should include the type and location, e.g. \"budget hotels in Sajek Valley",
+        "url": "https://maps.googleapis.com/maps/api/place/textsearch/json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', ``, 'string') }}"
+            },
+            {
+              "name": "key",
+              "value": "REPLACE_WITH_GOOGLE_MAPS_API_KEY"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.5,
+      "name": "search_places"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Save or update a user's long-term travel preferences including budget, hotel type, transport preference, dietary requirements, and preferred activities.",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_YOUR_PREFERENCES_SPREADSHEET_ID",
+          "mode": "list",
+          "cachedResultName": "travel_preferences"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "REPLACE_WITH_SHEET_NAME_OR_GID",
+          "mode": "list",
+          "cachedResultName": "Travel Preferences"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {
+            "user_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('user_id', ``, 'string') }}",
+            "budget": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('budget', ``, 'string') }}",
+            "hotel_type": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('hotel_type', ``, 'string') }}",
+            "transport": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('transport', ``, 'string') }}",
+            "dietary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('dietary', ``, 'string') }}",
+            "activities": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('activities', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "user_id",
+              "displayName": "user_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "budget",
+              "displayName": "budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hotel_type",
+              "displayName": "hotel_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "transport",
+              "displayName": "transport",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "dietary",
+              "displayName": "dietary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "activities",
+              "displayName": "activities",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "name": "save_preference",
+      "notes": "Save or update a user's long-term travel preferences including budget, hotel type, transport preference, dietary requirements, and preferred activities."
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Retrieve a user's saved long-term travel preferences using their user_id.",
+        "documentId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_YOUR_PREFERENCES_SPREADSHEET_ID",
+          "mode": "list",
+          "cachedResultName": "travel_preferences"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "REPLACE_WITH_SHEET_NAME_OR_GID",
+          "mode": "list",
+          "cachedResultName": "Travel Preferences"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "user_id",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', `User ID used to find the user's saved travel preferences.`, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "name": "get_preference"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "get_weather": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_exchange_rate": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "search_places": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "save_preference": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_preference": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "nodeGroups": []
+}

@@ -1,0 +1,16 @@
+flowchart TD
+    U[Chat message] --> T[Part B Chat Trigger]
+    T --> A[Gemini Travel Agent]
+    M[Simple Memory keyed by sessionId] <--> A
+    A --> C[MCP Client]
+    C --> S[Part A MCP Server]
+    S --> W[Open-Meteo weather]
+    S --> P[Google Places search]
+    S --> X[Exchange rate tool - disabled]
+    S --> G[Save preference to Google Sheets]
+    S --> R[Get preference from Google Sheets]
+    W --> A
+    P --> A
+    G --> A
+    R --> A
+    A --> O[Travel itinerary response]
